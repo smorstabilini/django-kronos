@@ -2,6 +2,7 @@ from functools import wraps
 import collections
 import crontab
 import django
+import platform
 from django.core.management import get_commands, load_command_class
 
 try:
@@ -152,3 +153,42 @@ def uninstall():
 
 def reinstall():
     return uninstall(), install()
+
+
+def install_ftprd(tasks):
+    """
+    Register tasks with cron.
+    :param tasks: a list where every element is an object with 2 keys: 'command' and 'schedule'.
+    :return: the number of cron jobs created.
+    """
+    print('Valori di kronos:')
+    print(KRONOS_PYTHON)
+    print(KRONOS_MANAGE)
+    print(KRONOS_PYTHONPATH)
+
+    load()
+    my_platform = platform.system().upper()
+    if my_platform.find('LINUX'):
+        tab = crontab.CronTab(user=True)
+    elif my_platform.find('MAC'):
+        tab = crontab.CronTab(user=True)
+    elif my_platform.find('WINDOWS'):
+        # reference: https: // pypi.python.org / pypi / python - crontab
+
+        # TODO: use a windows machine to make this a parameter:
+        tab = crontab.CronTab(tabfile="c:\\temp\\filename.tab")
+    else:
+        return 0
+
+    for task in tasks:
+        tab.new(task['command'], KRONOS_BREADCRUMB).setall(task['schedule'])
+        tab.write()
+    return len(tasks)
+
+
+def reinstall_ftprd(tasks):
+    """
+    Versione di Sergio che chiama install_ftprd
+    """
+    return uninstall(), install_ftprd(tasks)
+
