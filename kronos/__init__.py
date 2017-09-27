@@ -161,21 +161,23 @@ def install_ftprd(tasks):
     :param tasks: a list where every element is an object with 2 keys: 'command' and 'schedule'.
     :return: the number of cron jobs created.
     """
-    print('Valori di kronos:')
-    print(KRONOS_PYTHON)
-    print(KRONOS_MANAGE)
-    print(KRONOS_PYTHONPATH)
+    # print('Valori di kronos:')
+    # print(KRONOS_PYTHON)
+    # print(KRONOS_MANAGE)
+    # print(KRONOS_PYTHONPATH)
 
-    load()
+    # Se non ho capito male a me questo non serve perché non mi interessa cercare i management command custom che sono 
+    # decorati con kronos. 
+    # load()
+    
     my_platform = platform.system().upper()
-    if my_platform.find('LINUX'):
+    if my_platform.find('LINUX') > -1:
         tab = crontab.CronTab(user=True)
-    elif my_platform.find('MAC'):
+    elif my_platform.find('DARWIN') > -1:
         tab = crontab.CronTab(user=True)
-    elif my_platform.find('WINDOWS'):
+    elif my_platform.find('WINDOWS') > -1:
         # reference: https: // pypi.python.org / pypi / python - crontab
-
-        # TODO: use a windows machine to make this a parameter:
+        # NB: actually we never call the next line in a windows environment
         tab = crontab.CronTab(tabfile="c:\\temp\\filename.tab")
     else:
         return 0
